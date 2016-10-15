@@ -29,6 +29,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     File image;
+    String path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         imagesFolder.mkdirs();
         Integer unixTime = (int)(System.currentTimeMillis() / 1000L);
         image = new File(imagesFolder, "image_"+ unixTime.toString()+".jpg");
+        path = image.getPath();
         Uri uriSavedImage = Uri.fromFile(image);
         imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
         startActivityForResult(imageIntent,1);
@@ -63,7 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 // Image captured and saved to fileUri specified in the Intent
-                Toast.makeText(this, "Image saved \n"+image.getPath() , Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Image saved \n" + path , Toast.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Image capture cancelled", Toast.LENGTH_LONG).show();
             } else {
