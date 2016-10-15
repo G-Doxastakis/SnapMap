@@ -1,7 +1,6 @@
 package gr.teiath.ttss.snapmap;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,13 +21,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
 
-import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
-
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
-    File image;
-    String path;
+    String uploadPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +48,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         File imagesFolder = new File(Environment.getExternalStorageDirectory(), "SnapMap Images");
         imagesFolder.mkdirs();
         Integer unixTime = (int)(System.currentTimeMillis() / 1000L);
-        image = new File(imagesFolder, "image_"+ unixTime.toString()+".jpg");
-        path = image.getPath();
+        uploadPath ="image_"+ unixTime.toString()+".jpg";
+        File image = new File(imagesFolder, uploadPath);
         Uri uriSavedImage = Uri.fromFile(image);
         imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
         startActivityForResult(imageIntent,1);
@@ -65,7 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 // Image captured and saved to fileUri specified in the Intent
-                Toast.makeText(this, "Image saved to \n" + path , Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Image saved to \n" + uploadPath, Toast.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Image capture cancelled", Toast.LENGTH_LONG).show();
             } else {
