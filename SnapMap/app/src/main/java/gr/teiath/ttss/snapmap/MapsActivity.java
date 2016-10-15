@@ -28,7 +28,7 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
-    Uri uriSavedImage;
+    File image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,17 +42,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ib.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Fix for Nougat
-                Intent imageIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                File imagesFolder = new File(Environment.getExternalStorageDirectory(), "SnapMap Images");
-                imagesFolder.mkdirs();
-                Integer unixTime = (int)(System.currentTimeMillis() / 1000L);
-                File image = new File(imagesFolder, "image_"+ unixTime.toString()+".jpg");
-                uriSavedImage = Uri.fromFile(image);
-                imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
-                startActivityForResult(imageIntent,1);
+                takeImage();
             }
         });
+    }
+
+    public void takeImage(){
+        Intent imageIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File imagesFolder = new File(Environment.getExternalStorageDirectory(), "SnapMap Images");
+        imagesFolder.mkdirs();
+        Integer unixTime = (int)(System.currentTimeMillis() / 1000L);
+        image = new File(imagesFolder, "image_"+ unixTime.toString()+".jpg");
+        Uri uriSavedImage = Uri.fromFile(image);
+        imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
+        startActivityForResult(imageIntent,1);
     }
 
     @Override
@@ -60,7 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 // Image captured and saved to fileUri specified in the Intent
-                Toast.makeText(this, "Image saved at \n" + uriSavedImage.getPath().toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Image saved \n"+image.getPath() , Toast.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Image capture cancelled", Toast.LENGTH_LONG).show();
             } else {
@@ -94,7 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public boolean onMarkerClick(final Marker marker) {
         if(marker.getTitle().equals("TEI of Athens")){
-            Toast.makeText(this, "Stop clicking me", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "TEI of Athens", Toast.LENGTH_SHORT).show();
         }
         return true;
     }
