@@ -1,6 +1,7 @@
 package gr.teiath.ttss.snapmap;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -15,14 +16,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     Uri uriSavedImage;
@@ -39,8 +42,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ib.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO: Fix for Nougat
                 Intent imageIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 File imagesFolder = new File(Environment.getExternalStorageDirectory(), "SnapMap Images");
+                imagesFolder.mkdirs();
                 Integer unixTime = (int)(System.currentTimeMillis() / 1000L);
                 File image = new File(imagesFolder, "image_"+ unixTime.toString()+".jpg");
                 uriSavedImage = Uri.fromFile(image);
@@ -77,11 +82,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnMarkerClickListener(this);
 
-        // Add a marker in Sydney and move the camera
         LatLng teiath = new LatLng(38.003470, 23.675456);
         mMap.addMarker(new MarkerOptions().position(teiath).title("TEI of Athens"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(teiath));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(mMap.getMaxZoomLevel()));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+        mMap.addCircle(new CircleOptions().center(teiath).radius(50).fillColor(0x100030A0).strokeColor(0x300030A0).strokeWidth(5));
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        if(marker.getTitle().equals("TEI of Athens")){
+            Toast.makeText(this, "Stop clicking me", Toast.LENGTH_SHORT).show();
+        }
+        return true;
     }
 }
