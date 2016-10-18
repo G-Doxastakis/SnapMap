@@ -2,11 +2,13 @@ package gr.teiath.ttss.snapmap;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
@@ -73,7 +75,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Integer unixTime = (int)(System.currentTimeMillis() / 1000L);
         imageName ="image_"+ unixTime.toString()+".jpg";
         File image = new File(imagesFolder, imageName);
-        Uri uriSavedImage = Uri.fromFile(image);
+        Uri uriSavedImage;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            uriSavedImage = Uri.fromFile(image);
+        } else {
+            uriSavedImage = FileProvider.getUriForFile(this,
+                    BuildConfig.APPLICATION_ID + ".provider",
+                    image);
+        }
         imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
         startActivityForResult(imageIntent,1);
     }
