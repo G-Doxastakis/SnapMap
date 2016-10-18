@@ -3,10 +3,12 @@ package gr.teiath.ttss.snapmap;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -24,7 +26,7 @@ import java.io.File;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
-    String uploadPath;
+    String imageName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +36,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        ImageButton ib = (ImageButton) findViewById(R.id.CameraButton);
-        ib.setOnClickListener(new View.OnClickListener() {
+        ImageButton cb = (ImageButton) findViewById(R.id.CameraButton);
+        cb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takeImage();
+                v.startAnimation(AnimationUtils.loadAnimation(MapsActivity.this, R.anim.image_click));
+                (new Handler()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        takeImage();
+                    }
+                },600);
+            }
+        });
+        ImageButton vb = (ImageButton) findViewById(R.id.ARButton);
+        vb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.startAnimation(AnimationUtils.loadAnimation(MapsActivity.this, R.anim.image_click));
+            }
+        });
+        ImageButton sb = (ImageButton) findViewById(R.id.SetButton);
+        sb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.startAnimation(AnimationUtils.loadAnimation(MapsActivity.this, R.anim.image_click));
             }
         });
     }
@@ -48,8 +70,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         File imagesFolder = new File(Environment.getExternalStorageDirectory(), "SnapMap Images");
         imagesFolder.mkdirs();
         Integer unixTime = (int)(System.currentTimeMillis() / 1000L);
-        uploadPath ="image_"+ unixTime.toString()+".jpg";
-        File image = new File(imagesFolder, uploadPath);
+        imageName ="image_"+ unixTime.toString()+".jpg";
+        File image = new File(imagesFolder, imageName);
         Uri uriSavedImage = Uri.fromFile(image);
         imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
         startActivityForResult(imageIntent,1);
@@ -60,7 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 // Image captured and saved to fileUri specified in the Intent
-                Toast.makeText(this, "Image saved to \n" + uploadPath, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Image saved to \n" + imageName, Toast.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Image capture cancelled", Toast.LENGTH_LONG).show();
             } else {
