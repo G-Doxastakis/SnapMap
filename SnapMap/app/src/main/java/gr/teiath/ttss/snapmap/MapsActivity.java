@@ -16,6 +16,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -106,7 +107,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMarkerClickListener(this);
 
         LatLng teiath = new LatLng(38.003470, 23.675456);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(teiath,17));
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(teiath).tilt(90).zoom(17).bearing(0).build();
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         mMap.addMarker(new MarkerOptions().position(teiath).title("TEI of Athens"));
         mMap.addCircle(new CircleOptions().center(teiath).radius(50).fillColor(0x100030A0).strokeColor(0x300030A0).strokeWidth(5));
     }
