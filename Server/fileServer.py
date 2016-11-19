@@ -9,7 +9,7 @@ def upload_file():
 		f = request.files['file']
 		print (f.filename)
 		f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename)
-		return 'OK'
+		return 1
 	else:
 		return 'Server Online'
 if __name__ == '__main__':
