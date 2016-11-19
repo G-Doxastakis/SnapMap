@@ -5,7 +5,7 @@ app.config['UPLOAD_FOLDER'] = '/home/gdoxastakis/ServerStorage'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 @app.route('/upload', methods = ['GET', 'POST'])
 def upload_file():
-	print('Length: ' + len(request.files))
+	print('Length: ' + str(len(request.files)))
 	if request.method == 'POST':
 		file = request.files[0]
 		if file.filename == '':
