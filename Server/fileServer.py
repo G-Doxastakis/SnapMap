@@ -2,10 +2,12 @@ from flask import Flask, render_template, request
 from werkzeug import secure_filename
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = '/home/gdoxastakis/ServerStorage'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 @app.route('/upload', methods = ['GET', 'POST'])
 def upload_file():
 	if request.method == 'POST':
-		file = request.files['file']
+		file = request.files[0]
+		print('Length: ' + len(request.files))
 		if file.filename == '':
 			print('No file')
 		if file :
