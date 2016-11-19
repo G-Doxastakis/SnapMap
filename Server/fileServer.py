@@ -5,16 +5,15 @@ app.config['UPLOAD_FOLDER'] = '/home/gdoxastakis/ServerStorage'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 @app.route('/upload', methods = ['GET', 'POST'])
 def upload_file():
-	print(request.method)
 	if request.method == 'POST':
-		file = request.files[0]
-		if len(request.files) == 0:
-			print('No file')
-		elif file :
+		file = request.files['file']
+		if file :
 			filename = secure_filename(file.filename)
 			print(filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			return 'OK'
+		else:
+			print('No File')
 	else:
 		return 'Server Online'
 if __name__ == '__main__':
