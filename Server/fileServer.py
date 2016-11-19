@@ -13,7 +13,7 @@ def upload_file():
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			return 'OK'
-		else:
-			return 'Server Online'
+	else:
+		return 'Server Online'
 if __name__ == '__main__':
    app.run(app.run(host='83.212.116.82', port=9000, debug=True))
