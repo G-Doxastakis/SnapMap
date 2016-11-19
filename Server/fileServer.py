@@ -9,11 +9,11 @@ def upload_file():
 		if file.filename == '':
 			print('No file')
 		if file :
-			print ('Receiving File')
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-		return 'OK'
-	else:
+			print('Receiving File')
+			filename = secure_filename(file.filename)
+			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			return 'OK'
+		else:
 		return 'Server Online'
 if __name__ == '__main__':
    app.run(app.run(host='83.212.116.82', port=9000, debug=True))
