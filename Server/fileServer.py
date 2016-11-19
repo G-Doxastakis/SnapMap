@@ -11,8 +11,8 @@ def upload_file():
 		if file.filename == '':
 			print('No file')
 		if file :
-			print('Receiving File')
 			filename = secure_filename(file.filename)
+			print(filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			return 'OK'
 	else:
