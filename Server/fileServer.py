@@ -12,8 +12,7 @@ def upload_file():
 			print(filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			return 'OK'
-		else:
-			print('No File')
+		return 'No File'
 	else:
 		return 'Server Online'
 if __name__ == '__main__':
