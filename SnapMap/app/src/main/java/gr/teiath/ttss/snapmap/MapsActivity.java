@@ -28,8 +28,16 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+import cz.msebera.android.httpclient.Header;
+
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener , GoogleMap.OnMyLocationButtonClickListener,ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -92,12 +100,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startActivityForResult(imageIntent,1);
     }
 
+    public void uploadImage(){
+        File imagesFolder = new File(Environment.getExternalStorageDirectory(), "SnapMap Images");
+        File file = new File(imagesFolder, imageName);
+        String url = "http://83.212.116.82:9000/upload";
+
+        RequestParams params = new RequestParams();
+        try {
+            params.put("file", file);
+        } catch(FileNotFoundException e) {}
+
+        // send request
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.post(url, params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] bytes) {
+                // handle success response
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] bytes, Throwable throwable) {
+                // handle failure response
+            }
+        });
+
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 // Image captured and saved to fileUri specified in the Intent
                 Toast.makeText(this, "Image saved to \n" + imageName, Toast.LENGTH_LONG).show();
+                uploadImage();
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Image capture cancelled", Toast.LENGTH_LONG).show();
             } else {
