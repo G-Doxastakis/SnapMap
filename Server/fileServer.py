@@ -8,9 +8,9 @@ def upload_file():
 	print('Length: ' + str(len(request.files)))
 	if request.method == 'POST':
 		file = request.files[0]
-		if file.filename == '':
+		if len(request.files) == 0:
 			print('No file')
-		if file :
+		elif file :
 			filename = secure_filename(file.filename)
 			print(filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
