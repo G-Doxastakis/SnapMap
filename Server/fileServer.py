@@ -8,8 +8,8 @@ def upload_file():
 		print ('Receiving File   ')
 		f = request.files['file']
 		print (f.filename)
-		f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename)
-		return 1
+		f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
+		return 'OK'
 	else:
 		return 'Server Online'
 if __name__ == '__main__':
