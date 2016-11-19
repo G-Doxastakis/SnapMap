@@ -5,10 +5,18 @@ app.config['UPLOAD_FOLDER'] = '/home/gdoxastakis/ServerStorage'
 @app.route('/upload', methods = ['GET', 'POST'])
 def upload_file():
 	if request.method == 'POST':
-		print ('Receiving File   ')
-		f = request.files['file']
-		print (f.filename)
-		f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
+		
+		
+		file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No file')
+            return redirect(request.url)
+        if file :
+			print ('Receiving File')
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 		return 'OK'
 	else:
 		return 'Server Online'
