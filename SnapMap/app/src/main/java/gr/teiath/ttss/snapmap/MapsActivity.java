@@ -28,21 +28,26 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import cz.msebera.android.httpclient.Header;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener , GoogleMap.OnMyLocationButtonClickListener,ActivityCompat.OnRequestPermissionsResultCallback {
 
     private GoogleMap mMap;
-    String imageName;
+    static String imageName;
+    Handler mHandler= new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 v.startAnimation(AnimationUtils.loadAnimation(MapsActivity.this, R.anim.image_click));
-                (new Handler()).postDelayed(new Runnable() {
+                mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         takeImage();
@@ -105,22 +110,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         File file = new File(imagesFolder, imageName);
         String url = "http://83.212.116.82:9000/upload";
 
-        RequestParams params = new RequestParams();
-        try {
-            params.put("file", file);
-        } catch(FileNotFoundException e) {}
+        OkHttpClient client = new OkHttpClient();
 
-        // send request
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.post(url, params, new AsyncHttpResponseHandler() {
+        MediaType mediaType = MediaType.parse("multipart/form-data; boundary=---011000010111000001101001");
+        RequestBody body = RequestBody.create(mediaType, "-----011000010111000001101001\r\nContent-Disposition: form-data; " +
+                "name=\"file\"; filename=\""+imageName+"\"\r\nContent-Type: image/jpeg\r\n\r\n\r\n-----011000010111000001101001--");
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .addHeader("content-type", "multipart/form-data; boundary=---011000010111000001101001")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] bytes) {
-                // handle success response
+            public void onFailure(Call request, IOException e) {
+                //Log.e(LOG_TAG, e.toString());
             }
-
             @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] bytes, Throwable throwable) {
-                // handle failure response
+            public void onResponse(Call request, Response response) throws IOException {
+                //Log.w(LOG_TAG, response.body().string());
+                //Log.i(LOG_TAG, response.toString());
             }
         });
 
@@ -132,7 +142,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (resultCode == RESULT_OK) {
                 // Image captured and saved to fileUri specified in the Intent
                 Toast.makeText(this, "Image saved to \n" + imageName, Toast.LENGTH_LONG).show();
-                uploadImage();
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        uploadImage();
+                    }
+                },600);
+
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Image capture cancelled", Toast.LENGTH_LONG).show();
             } else {
