@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -112,25 +114,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         OkHttpClient client = new OkHttpClient();
 
-        MediaType mediaType = MediaType.parse("multipart/form-data; boundary=---011000010111000001101001");
-        RequestBody body = RequestBody.create(mediaType, "-----011000010111000001101001\r\nContent-Disposition: form-data; " +
-                "name=\"file\"; filename=\""+imageName+"\"\r\nContent-Type: image/jpeg\r\n\r\n\r\n-----011000010111000001101001--");
+        MediaType MEDIA_TYPE = MediaType.parse("image/jpeg");
+        RequestBody body =new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("latitude", "lat")
+                .addFormDataPart("longtitude", "long")
+                .addFormDataPart("file", imageName, RequestBody.create(MEDIA_TYPE, file))
+                .build();
+
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
-                .addHeader("content-type", "multipart/form-data; boundary=---011000010111000001101001")
+                .addHeader("content-type", "multipart/form-data")
                 .addHeader("cache-control", "no-cache")
                 .build();
-
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call request, IOException e) {
-                //Log.e(LOG_TAG, e.toString());
+                Log.e("[Server]", e.toString());
             }
             @Override
             public void onResponse(Call request, Response response) throws IOException {
-                //Log.w(LOG_TAG, response.body().string());
-                //Log.i(LOG_TAG, response.toString());
+                Log.w("[Server]", response.body().string());
+                Log.i("[Server]", response.toString());
             }
         });
 
