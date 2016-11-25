@@ -16,5 +16,10 @@ def upload_file():
 		return 'No File'
 	else:
 		return 'Server Online'
+
+@app.route('/download/<path:filename>', methods=['GET', 'POST'])
+def download(filename):
+    return send_from_directory(directory=app.config['UPLOAD_FOLDER'], filename=filename)
+		
 if __name__ == '__main__':
    app.run(app.run(host='83.212.116.82', port=9000, debug=True))
