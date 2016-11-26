@@ -8,15 +8,11 @@ def open_db():
 
 
 def create_table():
-    conn = sqlite3.connect('Snapmap.db')
-    c = conn.cursor()
     c.execute('CREATE TABLE IF NOT EXISTS \
     Images(Name TEXT, Lat FLOAT, Long FLOAT)')
 
 
-def add_entry(name, lon, lat):
-    conn = sqlite3.connect('Snapmap.db')
-    c = conn.cursor()
+def add_entry(name, lat, lon):
     lat = float(lat)
     lon = float(lon)
     c.execute('INSERT INTO images (Name, Lat, Long)\
@@ -25,8 +21,7 @@ def add_entry(name, lon, lat):
 
 
 def read_from_db(user_lat, user_lon):
-    conn = sqlite3.connect('Snapmap.db')
-    c = conn.cursor()
+    image_list = []
     lat = float(user_lat)
     lon = float(user_lon)
     maxlat = lat+0.000896
@@ -36,23 +31,21 @@ def read_from_db(user_lat, user_lon):
     c.execute('SELECT Name FROM images \
     WHERE Lat<? AND Lat>? AND Long<? AND Long>?', (maxlat, minlat, maxlon, minlon))
     for row in c.fetchall():
-        return row
+        image_list.append(row)
+    return image_list
 
 
 def delete(name):
-    conn = sqlite3.connect('Snapmap.db')
-    c = conn.cursor()
+    c.execute('SELECT * FROM images')
     c.execute('DELETE FROM images WHERE Name = ?', name)
     conn.commit()
 
 
 def clear():
-    conn = sqlite3.connect('Snapmap.db')
-    c = conn.cursor()
-    c.execute('DELETE * FROM images')
+    c.execute('DELETE FROM images')
     conn.commit()
 
 
-def close_db(c, conn):
+def close_db():
     c.close()
     conn.close()
