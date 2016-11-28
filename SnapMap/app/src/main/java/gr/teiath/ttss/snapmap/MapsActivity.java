@@ -47,8 +47,9 @@ import okhttp3.Response;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener , GoogleMap.OnMyLocationButtonClickListener,ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private GoogleMap mMap;
+    private static GoogleMap mMap;
     static String imageName;
+    static LatLng location;
     Handler mHandler= new Handler();
 
     @Override
@@ -137,6 +138,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onResponse(Call request, Response response) throws IOException {
                 Log.w("[Server]", response.body().string());
                 Log.i("[Server]", response.toString());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mMap.addMarker(new MarkerOptions().position(location).snippet("http://83.212.116.82:9000/download/"+imageName));
+                    }
+                });
+
             }
         });
 
@@ -176,7 +184,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMarkerClickListener(this);
-
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
     }
@@ -184,9 +191,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
-        if(marker.getTitle().equals("TEI of Athens")){
-            Toast.makeText(this, "TEI of Athens", Toast.LENGTH_SHORT).show();
-        }
+        String link = marker.getSnippet();
+        Intent i = new Intent(this, ImageViewer.class);
+        i.putExtra("url",link);
+        startActivity(i);
         return true;
     }
 
@@ -223,11 +231,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 @Override
                 public void onMyLocationChange(Location position) {
-                    mMap.clear();
-                    LatLng location = new LatLng(position.getLatitude(), position.getLongitude());
+                    location = new LatLng(position.getLatitude(), position.getLongitude());
                     CameraPosition cameraPosition = new CameraPosition.Builder().target(location).tilt(90).zoom(19).bearing(position.getBearing()).build();
                     mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                    mMap.addCircle(new CircleOptions().center(location).radius(50).fillColor(0x1038d17f).strokeColor(0x3038d17f).strokeWidth(5));
                 }
             });
         }
