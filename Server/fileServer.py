@@ -20,7 +20,7 @@ def upload_file():
 
 @app.route('/download/<path:filename>', methods=['GET', 'POST'])
 def download(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],filename, as_attachment=True)
+    return send_from_directory(app.config['UPLOAD_FOLDER'],filename, as_attachment=false)
 		
 if __name__ == '__main__':
    app.run(app.run(host='83.212.116.82', port=9000, debug=True))
